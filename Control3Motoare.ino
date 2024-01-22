@@ -1,34 +1,52 @@
 #include "AccelStepper.h"
 
 // Motor X
-#define enablePinX !PD7
-#define dirPinX PF1
-#define stepPinX PF0
+#define enablePinX 38
+#define dirPinX A1
+#define stepPinX A0
 AccelStepper motor_X(AccelStepper::DRIVER, stepPinX, dirPinX, enablePinX);
 
 // Motor Y
-#define enablePinY !PF2
-#define dirPinY PF7
-#define stepPinY PF6
+#define enablePinY A2
+#define dirPinY A7
+#define stepPinY A4
 AccelStepper motor_Y(AccelStepper::DRIVER, stepPinY, dirPinY, enablePinY);
 
 // Motor Z
-#define enablePinZ !PK0
-#define dirPinZ PL1
-#define stepPinZ PL3
+#define enablePinZ A8
+#define dirPinZ 48
+#define stepPinZ 46
 AccelStepper motor_Z(AccelStepper::DRIVER, stepPinZ, dirPinZ, enablePinZ);
+
+// Motor R1
+#define enablePinR1 24
+#define dirPinR1 28
+#define stepPinR1 26
+AccelStepper motor_R1(AccelStepper::DRIVER, stepPinR1, dirPinR1, enablePinR1);
+
+// Motor R2
+#define enablePinR2 30
+#define dirPinR2 34
+#define stepPinR2 36
+AccelStepper motor_R2(AccelStepper::DRIVER, stepPinR2, dirPinR2, enablePinR2);
 
 String command = "";
 
 void setup() {
   pinMode(enablePinX, OUTPUT);
-  digitalWrite(enablePinX, LOW);
+  digitalWrite(enablePinX, HIGH);
 
   pinMode(enablePinY, OUTPUT);
-  digitalWrite(enablePinY, LOW);
+  digitalWrite(enablePinY, HIGH);
 
   pinMode(enablePinZ, OUTPUT);
-  digitalWrite(enablePinZ, LOW);
+  digitalWrite(enablePinZ, HIGH);
+  
+  pinMode(enablePinR1, OUTPUT);
+  digitalWrite(enablePinR1, HIGH);
+
+  pinMode(enablePinR2, OUTPUT);
+  digitalWrite(enablePinR2, HIGH);
 
   motor_X.setAcceleration(200);
   motor_X.setMaxSpeed(500);
@@ -38,6 +56,12 @@ void setup() {
 
   motor_Z.setAcceleration(200);
   motor_Z.setMaxSpeed(500);
+
+  motor_R1.setAcceleration(200);
+  motor_R1.setMaxSpeed(500);
+
+  motor_R2.setAcceleration(200);
+  motor_R2.setMaxSpeed(500);
 
   Serial.begin(115200);
 }
@@ -146,6 +170,76 @@ void loop() {
       motor_Z.runToPosition();
     } else if (command.startsWith("stopZ")) {
       motor_Z.stop();
+    }
+ // }
+//}
+
+    // Motor R1 commands
+      else if (command.startsWith("readParamsR1")) {
+      Serial.print("MotorR1_Status=");
+      Serial.println(digitalRead(enablePinR1) == HIGH ? "DISABLED" : "ENABLE");
+      Serial.print("AccelerationR1=");
+      Serial.println(motor_R1.acceleration());
+      Serial.print("MaxSpeedR1=");
+      Serial.println(motor_R1.maxSpeed());
+      Serial.print("CurrentPositionR1=");
+      Serial.println(motor_R1.currentPosition());
+    } else if (command.startsWith("setAccelerationR1")) {
+      motor_R1.setAcceleration(parseValue(command));
+      Serial.print("AccelerationValueSetToR1=");
+      Serial.println(motor_R1.acceleration());
+    } else if (command.startsWith("setMaxSpeedR1")) {
+      motor_R1.setMaxSpeed(parseValue(command));
+      Serial.print("MaxSpeedValueSetToR1=");
+      Serial.println(motor_R1.maxSpeed());
+    } else if (command.startsWith("MoveToR1")) {
+      motor_R1.moveTo(parseValue(command));
+      motor_R1.runToPosition();
+    } else if (command.startsWith("motorEnableR1")) {
+      digitalWrite(enablePinR1, LOW);
+      Serial.println("MotorR1_ENABLED");
+    } else if (command.startsWith("motorDisableR1")) {
+      digitalWrite(enablePinR1, HIGH);
+      Serial.println("MotorR1_DISABLED");
+    } else if (command.startsWith("MoveR1")) {
+      motor_R1.move(parseValue(command));
+      motor_R1.runToPosition();
+    } else if (command.startsWith("stopR1")) {
+      motor_R1.stop();
+    }
+
+    // Motor R2 commands
+    else if (command.startsWith("readParamsR2")) {
+      Serial.print("MotorR2_Status=");
+      Serial.println(digitalRead(enablePinR2) == HIGH ? "DISABLED" : "ENABLE");
+      Serial.print("AccelerationR2=");
+      Serial.println(motor_R2.acceleration());
+      Serial.print("MaxSpeedR2=");
+      Serial.println(motor_R2.maxSpeed());
+      Serial.print("CurrentPositionR2=");
+      Serial.println(motor_R2.currentPosition());
+    } else if (command.startsWith("setAccelerationR2")) {
+      motor_R2.setAcceleration(parseValue(command));
+      Serial.print("AccelerationValueSetToR2=");
+      Serial.println(motor_R2.acceleration());
+    } else if (command.startsWith("setMaxSpeedR2")) {
+      motor_R2.setMaxSpeed(parseValue(command));
+      Serial.print("MaxSpeedValueSetToR2=");
+      Serial.println(motor_R2.maxSpeed());
+    } else if (command.startsWith("MoveToR2")) {
+      motor_R2.moveTo(parseValue(command));
+      motor_R2.runToPosition();
+    } else if (command.startsWith("motorEnableR2")) {
+      digitalWrite(enablePinR2, LOW);
+      Serial.println("MotorR2_ENABLED");
+    } else if (command.startsWith("motorDisableR2")) {
+      digitalWrite(enablePinR2, HIGH);
+      Serial.println("MotorR2_DISABLED");
+    } else if (command.startsWith("MoveR2")) {
+      motor_R2.move(parseValue(command));
+      motor_R2.runToPosition();
+    } else if (command.startsWith("stopR2")) {
+      motor_R2.stop();
     }
   }
 }
